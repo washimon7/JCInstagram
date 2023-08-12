@@ -164,25 +164,62 @@ fun TweetMainButtons() {
         TweetSocialButton(
             modifier = Modifier.weight(1f),
             isChecked = checkedComment,
-            checkedIcon = R.drawable.ic_chat_filled,
-            uncheckedIcon = R.drawable.ic_chat,
-            contentDescription = "comment"
+            checkedIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_chat_filled),
+                    contentDescription = "comment",
+                    tint = Color(0xFF7C828D),
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+            },
+            uncheckedIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_chat),
+                    contentDescription = "comment",
+                    tint = Color(0xFF7C828D),
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+            },
         ) { checkedComment = !checkedComment }
         TweetSocialButton(
             modifier = Modifier.weight(1f),
             isChecked = checkedRetweet,
-            checkedIcon = R.drawable.ic_rt,
-            uncheckedIcon = R.drawable.ic_rt,
-            contentDescription = "retweet",
-            iconColor = 0xFF3DCF61
+            checkedIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_rt),
+                    contentDescription = "retweet",
+                    tint = Color(0xFF3DCF61),
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+            },
+            uncheckedIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_rt),
+                    contentDescription = "retweet",
+                    tint = Color(0xFF7C828D),
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+            },
         ) { checkedRetweet = !checkedRetweet }
         TweetSocialButton(
             modifier = Modifier.weight(1f),
             isChecked = checkedLike,
-            checkedIcon = R.drawable.ic_like_filled,
-            uncheckedIcon = R.drawable.ic_like,
-            contentDescription = "like",
-            iconColor = 0xFFFF2320
+            checkedIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_like_filled),
+                    contentDescription = "like",
+                    tint = Color(0xFFFF2320),
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+            },
+            uncheckedIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_like),
+                    contentDescription = "like",
+                    tint = Color(0xFF7C828D),
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+            },
         ) { checkedLike = !checkedLike }
     }
 }
@@ -191,27 +228,22 @@ fun TweetMainButtons() {
 fun TweetSocialButton(
     modifier: Modifier,
     isChecked: Boolean,
-    checkedIcon: Int,
-    uncheckedIcon: Int,
-    contentDescription: String,
-    iconColor: Long = 0xFF7C828D,
+    checkedIcon: @Composable () -> Unit,
+    uncheckedIcon: @Composable () -> Unit,
     onClick: () -> Unit
 ) {
     var counter by rememberSaveable {
         mutableStateOf(1)
     }
 
-    Row(modifier = modifier.clickable {
-        onClick()
-        if (isChecked) counter-- else counter++
-    }) {
-        Icon(
-            painter = painterResource(id = if (isChecked) checkedIcon else uncheckedIcon),
-            contentDescription = contentDescription,
-            tint = Color(if (isChecked) iconColor else 0xFF7C828D),
-            modifier = Modifier.padding(end = 4.dp)
-        )
-        Text(text = counter.toString(), color = Color(0xFF7C828D), fontSize = 14.sp)
+    Box(modifier = modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
+            onClick()
+            if (isChecked) counter-- else counter++
+        }) {
+            if (isChecked) checkedIcon() else uncheckedIcon()
+            Text(text = counter.toString(), color = Color(0xFF7C828D), fontSize = 14.sp)
+        }
     }
 }
 
