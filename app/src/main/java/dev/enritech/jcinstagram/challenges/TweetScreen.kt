@@ -18,6 +18,10 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,7 +64,7 @@ fun TweetAvatar() {
         painter = painterResource(id = R.drawable.profile),
         contentDescription = "profile",
         modifier = Modifier
-            .size(65.dp)
+            .size(60.dp)
             .clip(CircleShape)
     )
 }
@@ -156,40 +160,71 @@ fun TweetMainButtons() {
 
 @Composable
 fun TweetCommentButton(modifier: Modifier) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.clickable { }) {
+    var checked by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var commentCounter by rememberSaveable {
+        mutableStateOf(1)
+    }
+
+    Row(modifier = modifier.clickable {
+        checked = !checked
+        if (checked) commentCounter++ else commentCounter--
+    }) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_chat),
+            painter = painterResource(id = if (checked) R.drawable.ic_chat_filled else R.drawable.ic_chat),
             contentDescription = "comment",
             tint = Color(0xFF7C828D),
             modifier = Modifier.padding(end = 4.dp)
         )
-        Text(text = "1", color = Color(0xFF7C828D), fontSize = 14.sp)
+        Text(text = commentCounter.toString(), color = Color(0xFF7C828D), fontSize = 14.sp)
     }
+
 }
 
 @Composable
 fun TweetRetweetButton(modifier: Modifier) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.clickable { }) {
+    var checked by rememberSaveable {
+        mutableStateOf(true)
+    }
+    var retweetCounter by rememberSaveable {
+        mutableStateOf(2)
+    }
+
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.clickable {
+        checked = !checked
+        if (checked) retweetCounter++ else retweetCounter--
+    }) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_rt),
+            painter = painterResource(id = if (checked) R.drawable.ic_rt else R.drawable.ic_rt),
             contentDescription = "retweet",
-            tint = Color(0xFF7C828D),
+            tint = Color(if (checked) 0xFF3DCF61 else 0xFF7C828D),
             modifier = Modifier.padding(end = 4.dp)
         )
-        Text(text = "2", color = Color(0xFF7C828D), fontSize = 14.sp)
+        Text(text = retweetCounter.toString(), color = Color(0xFF7C828D), fontSize = 14.sp)
     }
 }
 
 @Composable
 fun TweetLikeButton(modifier: Modifier) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.clickable { }) {
+    var checked by rememberSaveable {
+        mutableStateOf(true)
+    }
+    var likeCounter by rememberSaveable {
+        mutableStateOf(2)
+    }
+
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.clickable {
+        checked = !checked
+        if (checked) likeCounter++ else likeCounter--
+    }) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_like),
+            painter = painterResource(id = if (checked)R.drawable.ic_like_filled else R.drawable.ic_like),
             contentDescription = "like",
-            tint = Color(0xFF7C828D),
+            tint = Color(if (checked) 0xFFFF2320 else 0xFF7C828D),
             modifier = Modifier.padding(end = 4.dp)
         )
-        Text(text = "1", color = Color(0xFF7C828D), fontSize = 14.sp)
+        Text(text = likeCounter.toString(), color = Color(0xFF7C828D), fontSize = 14.sp)
     }
 }
 
@@ -197,14 +232,6 @@ fun TweetLikeButton(modifier: Modifier) {
 @Composable
 fun TweetScreenPreview() {
     JCInstagramTheme {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_dots),
-            contentDescription = "menu",
-            tint = Color(0xFFFFFFFF),
-            modifier = Modifier
-                .padding(4.dp)
-                .background(color = Color.Transparent, shape = CircleShape)
-                .clickable { }
-        )
+        TweetCommentButton(Modifier)
     }
 }
