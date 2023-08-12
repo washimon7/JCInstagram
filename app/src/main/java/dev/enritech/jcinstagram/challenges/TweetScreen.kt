@@ -82,23 +82,7 @@ fun TweetBody() {
 @Composable
 fun TweetHeader() {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-            Text(
-                text = "Aris",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Black,
-                color = Color(0xFFFFFFFF),
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(end = 8.dp)
-            ) {
-                Text(text = "@", fontSize = 16.sp, color = Color(0xFF64676E))
-                Text(text = "AristiDevs", fontSize = 16.sp, color = Color(0xFF64676E))
-            }
-            Text(text = "4h", fontSize = 16.sp, color = Color(0xFF64676E))
-        }
+        TweetTitle(Modifier.weight(1f))
         Icon(
             painter = painterResource(id = R.drawable.ic_dots),
             contentDescription = "menu",
@@ -108,6 +92,27 @@ fun TweetHeader() {
                 .background(color = Color.Transparent, shape = CircleShape)
                 .clickable { }
         )
+    }
+}
+
+@Composable
+fun TweetTitle(modifier: Modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        Text(
+            text = "Aris",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Black,
+            color = Color(0xFFFFFFFF),
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(end = 8.dp)
+        ) {
+            Text(text = "@", fontSize = 16.sp, color = Color(0xFF64676E))
+            Text(text = "AristiDevs", fontSize = 16.sp, color = Color(0xFF64676E))
+        }
+        Text(text = "4h", fontSize = 16.sp, color = Color(0xFF64676E))
     }
 }
 
