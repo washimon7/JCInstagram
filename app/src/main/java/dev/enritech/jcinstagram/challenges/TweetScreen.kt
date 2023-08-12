@@ -44,7 +44,7 @@ fun TweetScreen() {
     ) {
         Column {
             TweetItem()
-            Divider(color = Color(0xFF7C828D))
+            Divider(color = Color(0xFF7C828D), thickness = 0.5.dp)
         }
     }
 }
@@ -153,83 +153,65 @@ fun TweetMediaContent() {
 
 @Composable
 fun TweetMainButtons() {
+    var checkedComment by rememberSaveable { mutableStateOf(false) }
+    var checkedRetweet by rememberSaveable { mutableStateOf(true) }
+    var checkedLike by rememberSaveable { mutableStateOf(true) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        TweetCommentButton(Modifier.weight(1f))
-        TweetRetweetButton(Modifier.weight(1f))
-        TweetLikeButton(Modifier.weight(1f))
+        TweetSocialButton(
+            modifier = Modifier.weight(1f),
+            isChecked = checkedComment,
+            checkedIcon = R.drawable.ic_chat_filled,
+            uncheckedIcon = R.drawable.ic_chat,
+            contentDescription = "comment"
+        ) { checkedComment = !checkedComment }
+        TweetSocialButton(
+            modifier = Modifier.weight(1f),
+            isChecked = checkedRetweet,
+            checkedIcon = R.drawable.ic_rt,
+            uncheckedIcon = R.drawable.ic_rt,
+            contentDescription = "retweet",
+            iconColor = 0xFF3DCF61
+        ) { checkedRetweet = !checkedRetweet }
+        TweetSocialButton(
+            modifier = Modifier.weight(1f),
+            isChecked = checkedLike,
+            checkedIcon = R.drawable.ic_like_filled,
+            uncheckedIcon = R.drawable.ic_like,
+            contentDescription = "like",
+            iconColor = 0xFFFF2320
+        ) { checkedLike = !checkedLike }
     }
 }
 
 @Composable
-fun TweetCommentButton(modifier: Modifier) {
-    var checked by rememberSaveable {
-        mutableStateOf(false)
-    }
-    var commentCounter by rememberSaveable {
+fun TweetSocialButton(
+    modifier: Modifier,
+    isChecked: Boolean,
+    checkedIcon: Int,
+    uncheckedIcon: Int,
+    contentDescription: String,
+    iconColor: Long = 0xFF7C828D,
+    onClick: () -> Unit
+) {
+    var counter by rememberSaveable {
         mutableStateOf(1)
     }
 
     Row(modifier = modifier.clickable {
-        checked = !checked
-        if (checked) commentCounter++ else commentCounter--
+        onClick()
+        if (isChecked) counter-- else counter++
     }) {
         Icon(
-            painter = painterResource(id = if (checked) R.drawable.ic_chat_filled else R.drawable.ic_chat),
-            contentDescription = "comment",
-            tint = Color(0xFF7C828D),
+            painter = painterResource(id = if (isChecked) checkedIcon else uncheckedIcon),
+            contentDescription = contentDescription,
+            tint = Color(if (isChecked) iconColor else 0xFF7C828D),
             modifier = Modifier.padding(end = 4.dp)
         )
-        Text(text = commentCounter.toString(), color = Color(0xFF7C828D), fontSize = 14.sp)
-    }
-
-}
-
-@Composable
-fun TweetRetweetButton(modifier: Modifier) {
-    var checked by rememberSaveable {
-        mutableStateOf(true)
-    }
-    var retweetCounter by rememberSaveable {
-        mutableStateOf(2)
-    }
-
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.clickable {
-        checked = !checked
-        if (checked) retweetCounter++ else retweetCounter--
-    }) {
-        Icon(
-            painter = painterResource(id = if (checked) R.drawable.ic_rt else R.drawable.ic_rt),
-            contentDescription = "retweet",
-            tint = Color(if (checked) 0xFF3DCF61 else 0xFF7C828D),
-            modifier = Modifier.padding(end = 4.dp)
-        )
-        Text(text = retweetCounter.toString(), color = Color(0xFF7C828D), fontSize = 14.sp)
-    }
-}
-
-@Composable
-fun TweetLikeButton(modifier: Modifier) {
-    var checked by rememberSaveable {
-        mutableStateOf(true)
-    }
-    var likeCounter by rememberSaveable {
-        mutableStateOf(2)
-    }
-
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.clickable {
-        checked = !checked
-        if (checked) likeCounter++ else likeCounter--
-    }) {
-        Icon(
-            painter = painterResource(id = if (checked)R.drawable.ic_like_filled else R.drawable.ic_like),
-            contentDescription = "like",
-            tint = Color(if (checked) 0xFFFF2320 else 0xFF7C828D),
-            modifier = Modifier.padding(end = 4.dp)
-        )
-        Text(text = likeCounter.toString(), color = Color(0xFF7C828D), fontSize = 14.sp)
+        Text(text = counter.toString(), color = Color(0xFF7C828D), fontSize = 14.sp)
     }
 }
 
@@ -237,6 +219,6 @@ fun TweetLikeButton(modifier: Modifier) {
 @Composable
 fun TweetScreenPreview() {
     JCInstagramTheme {
-        TweetCommentButton(Modifier)
+        Text(text = "a")
     }
 }
