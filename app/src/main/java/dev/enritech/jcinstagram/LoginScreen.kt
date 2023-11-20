@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -189,8 +190,12 @@ fun ForgotPassword(modifier: Modifier, onClick: () -> Unit) {
 
 @Composable
 fun LoginButton(loginEnabled: Boolean, onClick: () -> Unit) {
+    val focusManager = LocalFocusManager.current
     Button(
-        onClick = { onClick() },
+        onClick = {
+            focusManager.clearFocus()
+            onClick()
+        },
         enabled = loginEnabled,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
