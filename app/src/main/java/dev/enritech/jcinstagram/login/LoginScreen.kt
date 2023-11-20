@@ -1,4 +1,4 @@
-package dev.enritech.jcinstagram
+package dev.enritech.jcinstagram.login
 
 import android.app.Activity
 import android.util.Patterns
@@ -33,6 +33,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -49,17 +50,18 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.enritech.jcinstagram.R
 import dev.enritech.jcinstagram.ui.theme.JCInstagramTheme
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(loginViewModel: LoginViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
         Header(Modifier.align(alignment = Alignment.TopEnd))
-        Body(Modifier.align(alignment = Alignment.Center))
+        Body(Modifier.align(alignment = Alignment.Center), loginViewModel)
         Footer(Modifier.align(alignment = Alignment.BottomCenter))
     }
 }
@@ -77,12 +79,10 @@ fun Header(modifier: Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Body(modifier: Modifier) {
-    var emailValue by rememberSaveable { mutableStateOf("") }
-    var passwordValue by rememberSaveable { mutableStateOf("") }
-    var isLoginEnabled by rememberSaveable {
-        mutableStateOf(false)
-    }
+fun Body(modifier: Modifier, loginViewModel: LoginViewModel) {
+    val emailValue: String by loginViewModel.email.observeAsState(initial = "")
+    val pwdValue: String by loginViewModel.pwd.observeAsState(initial = "")
+    val couldLogin: Boolean by loginViewModel.couldLogin.observeAsState(initial = false)
 
     Column(
         modifier = modifier
@@ -91,19 +91,19 @@ fun Body(modifier: Modifier) {
     ) {
         LogoImage(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(16.dp))
-        EmailInput(email = emailValue) {
-            emailValue = it
-            isLoginEnabled = checkLoginInputs(emailValue, passwordValue)
+        EmailInput(emailValue) {
+            loginViewModel.onLoginChanged(it, pwdValue)
         }
         Spacer(modifier = Modifier.size(4.dp))
-        PasswordInput(password = passwordValue) {
-            passwordValue = it
-            isLoginEnabled = checkLoginInputs(emailValue, passwordValue)
+        PwdInput(pwdValue) {
+            loginViewModel.onLoginChanged(emailValue, it)
         }
         Spacer(modifier = Modifier.size(8.dp))
-        ForgotPassword(Modifier.align(Alignment.End)) { }
+        ForgotPwd(Modifier.align(Alignment.End)) { }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(loginEnabled = isLoginEnabled) { }
+        LoginButton(couldLogin) {
+            println("Try signing..")
+        }
         Spacer(modifier = Modifier.size(16.dp))
         CustomDivider()
         Spacer(modifier = Modifier.size(32.dp))
@@ -141,12 +141,12 @@ fun EmailInput(email: String, onTextChanged: (String) -> Unit) {
 
 @ExperimentalMaterial3Api
 @Composable
-fun PasswordInput(password: String, onTextChanged: (String) -> Unit) {
+fun PwdInput(pwd: String, onTextChanged: (String) -> Unit) {
     var isVisiblePassword by rememberSaveable {
         mutableStateOf(false)
     }
     TextField(
-        value = password,
+        value = pwd,
         onValueChange = { onTextChanged(it) },
         placeholder = { Text(text = "Password", color = Color.Gray) },
         modifier = Modifier.fillMaxWidth(),
@@ -178,7 +178,7 @@ fun PasswordInput(password: String, onTextChanged: (String) -> Unit) {
 }
 
 @Composable
-fun ForgotPassword(modifier: Modifier, onClick: () -> Unit) {
+fun ForgotPwd(modifier: Modifier, onClick: () -> Unit) {
     Text(
         text = "Forgot password?",
         fontSize = 12.sp,
@@ -284,11 +284,6 @@ fun Footer(modifier: Modifier) {
         Spacer(modifier = Modifier.size(16.dp))
     }
 }
-
-fun checkLoginInputs(email: String, password: String): Boolean {
-    return Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length >= 6
-}
-
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
