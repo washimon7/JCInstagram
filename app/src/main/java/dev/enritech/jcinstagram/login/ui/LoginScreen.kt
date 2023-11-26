@@ -1,7 +1,6 @@
-package dev.enritech.jcinstagram.login
+package dev.enritech.jcinstagram.login.ui
 
 import android.app.Activity
-import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +23,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -55,14 +55,22 @@ import dev.enritech.jcinstagram.ui.theme.JCInstagramTheme
 
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        Header(Modifier.align(alignment = Alignment.TopEnd))
-        Body(Modifier.align(alignment = Alignment.Center), loginViewModel)
-        Footer(Modifier.align(alignment = Alignment.BottomCenter))
+    val isLoading: Boolean by loginViewModel.isLoading.observeAsState(false)
+
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(Modifier.align(Alignment.Center))
+        }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
+            Header(Modifier.align(alignment = Alignment.TopEnd))
+            Body(Modifier.align(alignment = Alignment.Center), loginViewModel)
+            Footer(Modifier.align(alignment = Alignment.BottomCenter))
+        }
     }
 }
 
@@ -101,9 +109,7 @@ fun Body(modifier: Modifier, loginViewModel: LoginViewModel) {
         Spacer(modifier = Modifier.size(8.dp))
         ForgotPwd(Modifier.align(Alignment.End)) { }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(couldLogin) {
-            println("Try signing..")
-        }
+        LoginButton(couldLogin, loginViewModel)
         Spacer(modifier = Modifier.size(16.dp))
         CustomDivider()
         Spacer(modifier = Modifier.size(32.dp))
@@ -189,12 +195,12 @@ fun ForgotPwd(modifier: Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-fun LoginButton(loginEnabled: Boolean, onClick: () -> Unit) {
+fun LoginButton(loginEnabled: Boolean, loginViewModel: LoginViewModel) {
     val focusManager = LocalFocusManager.current
     Button(
         onClick = {
             focusManager.clearFocus()
-            onClick()
+            loginViewModel.onLoginSelected()
         },
         enabled = loginEnabled,
         modifier = Modifier.fillMaxWidth(),
@@ -284,12 +290,11 @@ fun Footer(modifier: Modifier) {
         Spacer(modifier = Modifier.size(16.dp))
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     JCInstagramTheme {
-        LoginButton(loginEnabled = false) {
 
-        }
     }
 }
