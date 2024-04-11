@@ -1,4 +1,4 @@
-package dev.enritech.jcinstagram
+package dev.enritech.jcinstagram.login
 
 import android.app.Activity
 import android.util.Patterns
@@ -33,6 +33,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -48,17 +49,18 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.enritech.jcinstagram.R
 import dev.enritech.jcinstagram.ui.theme.JCInstagramTheme
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(loginViewModel: LoginViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
         Header(Modifier.align(alignment = Alignment.TopEnd))
-        Body(Modifier.align(alignment = Alignment.Center))
+        Body(loginViewModel, Modifier.align(alignment = Alignment.Center))
         Footer(Modifier.align(alignment = Alignment.BottomCenter))
     }
 }
@@ -76,8 +78,9 @@ fun Header(modifier: Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Body(modifier: Modifier) {
-    var emailValue by rememberSaveable { mutableStateOf("") }
+fun Body(loginViewModel: LoginViewModel, modifier: Modifier) {
+    val emailValue: String by loginViewModel.email.observeAsState(initial = "")
+    //var emailValue by rememberSaveable { mutableStateOf("") }
     var passwordValue by rememberSaveable { mutableStateOf("") }
     var isLoginEnabled by rememberSaveable {
         mutableStateOf(false)
@@ -91,8 +94,7 @@ fun Body(modifier: Modifier) {
         LogoImage(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(16.dp))
         EmailInput(email = emailValue) {
-            emailValue = it
-            isLoginEnabled = checkLoginInputs(emailValue, passwordValue)
+            loginViewModel.onLoginChanged(it)
         }
         Spacer(modifier = Modifier.size(4.dp))
         PasswordInput(password = passwordValue) {
