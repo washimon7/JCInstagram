@@ -1,7 +1,6 @@
 package dev.enritech.jcinstagram.login
 
 import android.app.Activity
-import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -80,11 +79,8 @@ fun Header(modifier: Modifier) {
 @Composable
 fun Body(loginViewModel: LoginViewModel, modifier: Modifier) {
     val emailValue: String by loginViewModel.email.observeAsState(initial = "")
-    //var emailValue by rememberSaveable { mutableStateOf("") }
-    var passwordValue by rememberSaveable { mutableStateOf("") }
-    var isLoginEnabled by rememberSaveable {
-        mutableStateOf(false)
-    }
+    val passwordValue: String by loginViewModel.password.observeAsState(initial = "")
+    val isLoginEnabled: Boolean by loginViewModel.isLoginEnabled.observeAsState(initial = false)
 
     Column(
         modifier = modifier
@@ -94,12 +90,11 @@ fun Body(loginViewModel: LoginViewModel, modifier: Modifier) {
         LogoImage(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(16.dp))
         EmailInput(email = emailValue) {
-            loginViewModel.onLoginChanged(it)
+            loginViewModel.onLoginChanged(it, passwordValue)
         }
         Spacer(modifier = Modifier.size(4.dp))
         PasswordInput(password = passwordValue) {
-            passwordValue = it
-            isLoginEnabled = checkLoginInputs(emailValue, passwordValue)
+            loginViewModel.onLoginChanged(emailValue, it)
         }
         Spacer(modifier = Modifier.size(8.dp))
         ForgotPassword(Modifier.align(Alignment.End)) { }
@@ -280,10 +275,6 @@ fun Footer(modifier: Modifier) {
         }
         Spacer(modifier = Modifier.size(16.dp))
     }
-}
-
-fun checkLoginInputs(email: String, password: String): Boolean {
-    return Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length >= 6
 }
 
 @Preview(showBackground = true)
