@@ -1,4 +1,4 @@
-package dev.enritech.jcinstagram.login
+package dev.enritech.jcinstagram.login.ui
 
 import android.app.Activity
 import androidx.compose.foundation.Image
@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -58,9 +59,16 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Header(Modifier.align(alignment = Alignment.TopEnd))
-        Body(loginViewModel, Modifier.align(alignment = Alignment.Center))
-        Footer(Modifier.align(alignment = Alignment.BottomCenter))
+        val isLoading by loginViewModel.isLoading.observeAsState(initial = false)
+        if (isLoading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Header(Modifier.align(alignment = Alignment.TopEnd))
+            Body(loginViewModel, Modifier.align(alignment = Alignment.Center))
+            Footer(Modifier.align(alignment = Alignment.BottomCenter))
+        }
     }
 }
 
@@ -99,7 +107,7 @@ fun Body(loginViewModel: LoginViewModel, modifier: Modifier) {
         Spacer(modifier = Modifier.size(8.dp))
         ForgotPassword(Modifier.align(Alignment.End)) { }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(loginEnabled = isLoginEnabled) { }
+        LoginButton(loginViewModel, loginEnabled = isLoginEnabled)
         Spacer(modifier = Modifier.size(16.dp))
         CustomDivider()
         Spacer(modifier = Modifier.size(32.dp))
@@ -185,9 +193,9 @@ fun ForgotPassword(modifier: Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-fun LoginButton(loginEnabled: Boolean, onClick: () -> Unit) {
+fun LoginButton(loginViewModel: LoginViewModel, loginEnabled: Boolean) {
     Button(
-        onClick = { onClick() },
+        onClick = { loginViewModel.onLoginSelected() },
         enabled = loginEnabled,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
@@ -281,8 +289,6 @@ fun Footer(modifier: Modifier) {
 @Composable
 fun LoginScreenPreview() {
     JCInstagramTheme {
-        LoginButton(loginEnabled = false) {
-
-        }
+        Text(text = "")
     }
 }
